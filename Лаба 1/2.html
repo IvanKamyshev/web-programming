@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>Этап 2: Шайба</title>
+<style>
+  canvas {
+    background-color: #a0d8ef;
+    display: block;
+    margin: 20px auto;
+    border: 2px solid #333;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+
+<script>
+// Получаем контекст
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+// Отрисовка поля
+function drawField() {
+  ctx.fillStyle = '#a0d8ef';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+// Объект шайбы
+const puck = {
+  x: canvas.width / 2,
+  y: canvas.height / 2,
+  radius: 10,
+};
+// Функция для отрисовки шайбы
+function drawPuck() {
+  ctx.beginPath();
+  ctx.arc(puck.x, puck.y, puck.radius, 0, Math.PI * 2);
+  ctx.fillStyle = 'black';
+  ctx.fill();
+}
+function game() {
+  drawField();
+  drawPuck();
+}
+game();
+</script>
+</body>
+</html> 

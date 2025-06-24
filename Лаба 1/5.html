@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>Этап 5: Шайба</title>
+<style>
+  canvas {
+    background-color: #a0d8ef; /* цвет льда */
+    display: block;
+    margin: 20px auto;
+    border: 2px solid #333;
+  }
+</style>
+</head>
+<body>
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+<script>// Получаем контекст
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+// Объекты ракеток
+const player1 = {
+  x: 10,
+  y: canvas.height / 2 -30,
+  width:10,
+  height:60,
+  dy:0,
+};
+const player2 = {
+  x: canvas.width -20,
+  y: canvas.height /2 -30,
+  width:10,
+  height:60,
+  dy:0,
+};// Объект шайбы
+const ball = {
+  x: canvas.width/2,
+  y: canvas.height/2,
+  radius:8,
+  speedX:4 * (Math.random() >0.5 ?1 :-1), // случайное направление
+  speedY:4 * (Math.random() >0.5 ?1 :-1),
+};
+// Обработка нажатий клавиш для ракеток
+document.addEventListener('keydown', e => {
+  if (e.key === 'w' || e.key === 'W') {
+    player1.dy = -5;
+  } else if (e.key === 's' || e.key === 'S') {
+    player1.dy = +5;
+  }
+  if (e.key === 'ArrowUp') {
+    player2.dy = -5;
+  } else if (e.key === 'ArrowDown') {
+    player2.dy = +5;
+  }
+});
+document.addEventListener('keyup', e => {
+  if (e.key === 'w' || e.key === 'W' || e.key === 's' || e.key === 'S') {
+    player1.dy =0;
+  }
+  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    player2.dy=0;
+  }
+});
+// Отрисовка поля
+function drawField() {
+  ctx.fillStyle='#a0d8ef';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+}
+// Отрисовка ракеток
+function drawPlayers() {
+  ctx.fillStyle='red';
+  ctx.fillRect(player1.x,player1.y,player1.width,player1.height);
+  
+  ctx.fillStyle='blue';
+  ctx.fillRect(player2.x,player2.y,player2.width,player2.height);
+}
+// Отрисовка шайбы
+function drawBall() {
+   ctx.beginPath();
+   ctx.arc(ball.x, ball.y, ball.radius,0, Math.PI*2);
+   ctx.fillStyle='black';
+   ctx.fill();
+}
+// Обновление позиций ракеток
+function updatePlayers() {
+   if (player1.y + player1.dy >=0 && player1.y + player1.dy + player1.height <= canvas.height) {
+     player1.y += player1.dy;
+   }
+   if (player2.y + player2.dy >=0 && player2.y + player2.dy + player2.height <= canvas.height) {
+     player2.y += player2.dy;
+   }
+}// Обновление позиции шайбы
+function updateBall() {
+   ball.x += ball.speedX;
+   ball.y += ball.speedY;
+   // Отскок от верхней и нижней границ
+   if (ball.y - ball.radius <=0 || ball.y + ball.radius >= canvas.height) {
+     ball.speedY *= -1;
+   }
+   // Проверка столкновения с ракетками
+   // Левая ракетка
+   if (
+     ball.x - ball.radius <= player1.x + player1.width &&
+     ball.y >= player1.y &&
+     ball.y <= player1.y + player1.height
+   ) {
+     ball.speedX *= -1; // отскок
+     // Можно добавить эффект "отскока" в зависимости от точки попадания
+   }// Правая ракетка
+   if (
+     ball.x + ball.radius >= player2.x &&
+     ball.y >= player2.y &&
+     ball.y <= player2.y + player2.height
+   ) {
+     ball.speedX *= -1; // отскок
+   }// Проверка выхода за левый край — очко для правого игрока
+   if (ball.x + ball.radius <0) {
+     alert('Очко! Правый игрок');
+     resetBall();
+   }// Проверка выхода за правый край — очко для левого игрока
+   if (ball.x - ball.radius > canvas.width) {
+     alert('Очко! Левый игрок');
+     resetBall();
+   }
+}// Сброс позиции шайбы после очка
+function resetBall() {
+    ball.x = canvas.width/2;
+    ball.y=canvas.height/2; // случайное направление для следующего розыгрыша
+    const dirX = Math.random() >0.5 ?1 :-1;
+    const dirY= Math.random() >0.5 ?1 :-1;
+    ball.speedX=4*dirX;
+    ball.speedY=4*dirY;
+}// Основной цикл игры
+function game() {
+   drawField();
+   updatePlayers();
+   updateBall();
+   drawPlayers();
+   drawBall();
+   requestAnimationFrame(game);
+}// Запуск игры
+game();
+</script>
+</body>
+</html>

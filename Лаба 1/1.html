@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>Простой хоккей</title>
+<style>
+  canvas {
+    background-color: #a0d8ef; /* цвет льда */
+    display: block;
+    margin: 20px auto;
+    border: 2px solid #333;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+
+<script>
+// Получаем контекст
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// Функция для отрисовки поля
+function drawField() {
+  ctx.fillStyle = '#a0d8ef'; // цвет льда
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // Можно добавить линии или разметку по желанию
+}
+
+drawField();
+</script>
+
+</body>
+</html>

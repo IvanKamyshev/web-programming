@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>Этап 4: Два игрока (ракетки) с сохранением</title>
+<style>
+  canvas {
+    background-color: #a0d8ef; /* цвет льда */
+    display: block;
+    margin: 20px auto;
+    border: 2px solid #333;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+
+<script>
+// Получаем контекст
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// Попытка загрузить состояние из localStorage
+function loadState() {
+  const stateStr = localStorage.getItem('gameState');
+  if (stateStr) {
+    try {
+      return JSON.parse(stateStr);
+    } catch(e) {
+      console.error('Ошибка при загрузке состояния:', e);
+    }
+  }
+  // Если нет сохранения или ошибка — возвращаем дефолтные значения
+  return {
+    player1: {
+      x: 10,
+      y: canvas.height / 2 -30,
+      width:10,
+      height:60,
+      dy:0,
+    },
+    player2: {
+      x: canvas.width -20,
+      y: canvas.height /2 -30,
+      width:10,
+      height:60,
+      dy:0,
+    }
+  };
+}
+
+// Сохраняем состояние в localStorage
+function saveState() {
+  const state = {
+    player1,
+    player2
+  };
+  localStorage.setItem('gameState', JSON.stringify(state));
+}
+
+// Загружаем состояние
+const {player1, player2} = loadState();
+
+// Обработка нажатий клавиш
+document.addEventListener('keydown', e => {
+  if (e.key === 'w' || e.key === 'W') {
+    player1.dy = -5;
+  } else if (e.key === 's' || e.key === 'S') {
+    player1.dy = +5;
+  }
+
+  if (e.key === 'ArrowUp') {
+    player2.dy = -5;
+  } else if (e.key === 'ArrowDown') {
+    player2.dy = +5;
+  }
+});
+
+document.addEventListener('keyup', e => {
+  if (e.key === 'w' || e.key === 'W' || e.key === 's' || e.key === 'S') {
+    player1.dy =0;
+  }
+  
+  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    player2.dy=0;
+  }
+});
+
+// Функция отрисовки поля
+function drawField() {
+  ctx.fillStyle='#a0d8ef';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+}
+
+// Функция отрисовки ракеток
+function drawPlayers() {
+  ctx.fillStyle='red';
+  ctx.fillRect(player1.x,player1.y,player1.width,player1.height);
+  
+  ctx.fillStyle='blue';
+  ctx.fillRect(player2.x,player2.y,player2.width,player2.height);
+}
+
+// Обновление позиций ракеток с учетом границ
+function updatePlayers() {
+   // Ограничение по границам поля для первой ракетки
+   if (player1.y + player1.dy >=0 && player1.y + player1.dy + player1.height <= canvas.height) {
+     player1.y += player1.dy;
+   }
+   // Ограничение по границам поля для второй ракетки
+   if (player2.y + player2.dy >=0 && player2.y + player2.dy + player2.height <= canvas.height) {
+     player2.y += player2.dy;
+   }
+}
+
+// Основной цикл игры
+function game() {
+   drawField();
+   updatePlayers();
+   drawPlayers();
+
+   // Сохраняем состояние при каждом кадре
+   saveState();
+
+   requestAnimationFrame(game);
+}
+
+// Запуск цикла
+game();
+
+</script>
+
+</body>
+</html>
